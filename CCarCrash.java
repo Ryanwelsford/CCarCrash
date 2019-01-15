@@ -8,11 +8,20 @@ public class CCarCrash extends JFrame implements ActionListener
 	// panels
 	private JPanel jPCentre, jPBottomRight, jPBottomLeft;
 	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle;
+	private JPanel jPRightTop1, jPRTop2, jPRighTop3;
+	
 	// text fields
     private JTextField jTFOption;
+    private int nOption = 1;
+    private JTextField jTFSquare;
+    private int nSquare = 17;
+    private JTextField jTFDirection;
+    private String sDirection = "E";
     
     // labels
     private JLabel jLOption;
+    private JLabel jLSquare;
+    private JLabel jLDirection;
     
     // buttons options and exit (right hand side buttons)
     private JButton jBOption1, jBOption2, jBOption3;
@@ -30,14 +39,14 @@ public class CCarCrash extends JFrame implements ActionListener
         CCarCrash frame = new CCarCrash();
         frame.setSize(810, 650);
         frame.createGUI();
-        frame.show();
+        frame.setVisible(true);
     }
  
     private void createGUI()
     {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         Container window = getContentPane();
-        window.setLayout(new FlowLayout() );
+        window.setLayout(new FlowLayout() ); // sets items to centre into the window
         
         // panels section
         
@@ -59,6 +68,8 @@ public class CCarCrash extends JFrame implements ActionListener
         jPRightTop.setPreferredSize(new Dimension(180, 100));
         jPRightTop.setBackground(Color.gray);
         jPRight.add(jPRightTop);
+        
+        // inside top right box needs panel 1 2 3 
         
         jPRightMiddle = new JPanel();
         jPRightMiddle.setPreferredSize(new Dimension(180, 300));
@@ -84,23 +95,36 @@ public class CCarCrash extends JFrame implements ActionListener
         
         //git test fun times
         
-        // labels section
+        // options area in right top labels section
         jLOption = new JLabel("Option");
-        jPRightMiddle.add(jLOption); 
+        jPRightTop.add(jLOption); 
+        jTFOption = new JTextField(""+nOption);
+        jPRightTop.add(jTFOption);
         
-        // text fields section
-        jTFOption = new JTextField("1");
-        jPRightMiddle.add(jTFOption);
+        // square area label and text field
+        jLSquare = new JLabel("Square");
+        jPRightTop.add(jLSquare);
+        jTFSquare = new JTextField(""+nSquare);
+        jPRightTop.add(jTFSquare);
+        
+        // Direction area label and text field
+        jLDirection = new JLabel("Direction");
+        jPRightTop.add(jLDirection);
+        jTFDirection = new JTextField(sDirection);
+        jPRightTop.add(jTFDirection);
         
         // buttons exit option 1-3 placed within rightbottom
         jBOption1 = new JButton("Option 1");
         jPRightBottom.add(jBOption1);
+        jBOption1.addActionListener(this);
         
         jBOption2 = new JButton("Option 2");
         jPRightBottom.add(jBOption2);
+        jBOption2.addActionListener(this);
         
         jBOption3 = new JButton("Option 3");
         jPRightBottom.add(jBOption3);
+        jBOption3.addActionListener(this);
         
         jBExit = new JButton("Exit");
         jPRightBottom.add(jBExit);
@@ -129,8 +153,19 @@ public class CCarCrash extends JFrame implements ActionListener
         
         
     }
+   // public void actionPerformed(ActionEvent event)
+   // {
+   // 	System.exit(0);
+   // }
     public void actionPerformed(ActionEvent event)
-    {
-    	System.exit(0);
+    { 
+    	// nOption = nOption+1;
+    	jTFOption.setText(""+(nOption+1));
+    	nOption = nOption+1;
+    	nSquare = nSquare+1;
+    	jTFSquare.setText(""+nSquare);
+    	jTFDirection.setText("S");
+    	
     }
+    
 }

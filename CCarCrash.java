@@ -7,7 +7,7 @@ public class CCarCrash extends JFrame implements ActionListener
 {
 	// panels
 	private JPanel jPCentre, jPBottomRight, jPBottomLeft;
-	private JPanel jPRight, jPRightTop, jPRightBottom;
+	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle;
 	// text fields
     private JTextField jTFOption;
     
@@ -54,15 +54,21 @@ public class CCarCrash extends JFrame implements ActionListener
         window.add(jPRight);
         
         // inside right
-        jPRightBottom = new JPanel();
-        jPRightBottom.setPreferredSize(new Dimension(180, 200));
-        jPRightBottom.setBackground(Color.gray);
-        jPRight.add(jPRightBottom);
         
         jPRightTop = new JPanel();
         jPRightTop.setPreferredSize(new Dimension(180, 100));
         jPRightTop.setBackground(Color.gray);
         jPRight.add(jPRightTop);
+        
+        jPRightMiddle = new JPanel();
+        jPRightMiddle.setPreferredSize(new Dimension(180, 300));
+        jPRightMiddle.setBackground(Color.green);
+        jPRight.add(jPRightMiddle);
+        
+        jPRightBottom = new JPanel();
+        jPRightBottom.setPreferredSize(new Dimension(180, 100));
+        jPRightBottom.setBackground(Color.gray);
+        jPRight.add(jPRightBottom);
         
         // bottom
         jPBottomLeft = new JPanel();
@@ -80,24 +86,24 @@ public class CCarCrash extends JFrame implements ActionListener
         
         // labels section
         jLOption = new JLabel("Option");
-        jPRight.add(jLOption); 
+        jPRightMiddle.add(jLOption); 
         
         // text fields section
         jTFOption = new JTextField("1");
-        jPRight.add(jTFOption);
+        jPRightMiddle.add(jTFOption);
         
-        // buttons exit option 1-3
+        // buttons exit option 1-3 placed within rightbottom
         jBOption1 = new JButton("Option 1");
-        jPRight.add(jBOption1);
+        jPRightBottom.add(jBOption1);
         
         jBOption2 = new JButton("Option 2");
-        jPRight.add(jBOption2);
+        jPRightBottom.add(jBOption2);
         
         jBOption3 = new JButton("Option 3");
-        jPRight.add(jBOption3);
+        jPRightBottom.add(jBOption3);
         
         jBExit = new JButton("Exit");
-        jPRight.add(jBExit);
+        jPRightBottom.add(jBExit);
         jBExit.addActionListener(this);
         
         // buttons act run reset

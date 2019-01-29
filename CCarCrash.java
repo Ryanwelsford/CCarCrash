@@ -1,16 +1,17 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.event.*;
  
  
-public class CCarCrash extends JFrame implements ActionListener
+public class CCarCrash extends JFrame implements ActionListener, ChangeListener
 {
 	// panels
 	private JPanel jPCentre, jPBottomRight, jPBottomLeft;
-	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle, jPRightMovement;
+	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle,jPRightMiddleTimer, jPRightMovement;
 	
-	// text fields in top right
+	// Right top
+	// text fields in top right and variables used within right top
     private JTextField jTFOption;
     private int nOption = 1;
     private JTextField jTFSquare;
@@ -22,19 +23,23 @@ public class CCarCrash extends JFrame implements ActionListener
     
     // labels in right top
     private JLabel jLOption, jLSquare, jLDirection;
-
+    
+    // right middle
     // labels in right middle
     private JLabel jLTimer;
     private JLabel jLTimerColons;
     
     // text fields in right middle
-    private JTextField jTFTimer1, jTFTimer2, jTFTimer3;
+    private JTextField jTFTimerHours, jTFTimerMinutes, jTFTimerSeconds;
+    
+    // timer for hours, mins, secs.
+    private javax.swing.Timer secsTimer;
+    int secs = 0;
     
     // buttons options and exit (right hand side buttons)
     private JButton jBOption1, jBOption2, jBOption3;
     private JButton jBExit;
-    // buttons for bottom area
-    private JButton jBAct, jBRun, jBReset;
+    
     
     // buttons for directional keys
     // buttons for top row labelled top left top middle etc
@@ -43,10 +48,16 @@ public class CCarCrash extends JFrame implements ActionListener
     private JButton jBML, jBBlank, jBMR;
     // buttons for bottom row labelled bottom left etc
     private JButton jBBM;
+    // bottom bar 
+    // buttons for bottom area
+    private JButton jBAct, jBRun, jBReset;
     
     // slider with slider label
     private JSlider jSSlider;
     private JLabel jLSlider;
+    // timer for slider
+    private javax.swing.Timer sliderTimer;
+    
     
  
     public static void main (String[] args)
@@ -60,13 +71,32 @@ public class CCarCrash extends JFrame implements ActionListener
     {
     	jBBlank = new JButton();
     	jBBlank.setEnabled(false);
+    	jBBlank.setBackground(Color.lightGray);
+    	
     	jPRightMovement.add(jBBlank);
     	
     }
     private void timerColons()
     {
     	jLTimerColons = new JLabel(":");
-    	jPRightMiddle.add(jLTimerColons);
+    	jLTimerColons.setHorizontalAlignment(JLabel.CENTER);
+    	jPRightMiddleTimer.add(jLTimerColons);
+    }
+    private void secsTimer()
+    {
+        jTFTimerHours.setText(Integer.toString((secs/3600)%60));
+        // set to 3600 secs in an hour + modulus 60 to prevent higher than 60 appearing in field
+        jTFTimerMinutes.setText(Integer.toString((secs/60)%60));
+        // 60 seconds in a minute modulus 60 prevents over 60 from being in field
+        jTFTimerSeconds.setText(Integer.toString(secs%60));
+        secs++;
+    }
+    private void sliderTimer()
+    {
+    	int speedValue = jSSlider.getValue();
+        sliderTimer = new Timer(1000, this);
+        sliderTimer.start();
+    	sliderTimer.setDelay(speedValue);
     }
  
     private void createGUI()
@@ -107,9 +137,15 @@ public class CCarCrash extends JFrame implements ActionListener
         // inside right middle area
         
         jPRightMiddle = new JPanel();
-        jPRightMiddle.setPreferredSize(new Dimension(90, 125));
-        // jPRightMiddle.setBackground(Color.green);
+        jPRightMiddle.setPreferredSize(new Dimension(100, 20));
+        jPRightMiddle.setBackground(Color.green);
         jPRight.add(jPRightMiddle);
+        
+        jPRightMiddleTimer = new JPanel();
+        jPRightMiddleTimer.setPreferredSize(new Dimension(130, 20));
+        // jPRightMiddleTimer.setBackground(Color.pink);
+        jPRightMiddleTimer.setLayout(new GridLayout(1, 5));
+        jPRight.add(jPRightMiddleTimer);
         
         
         // inside right bottom area
@@ -138,18 +174,21 @@ public class CCarCrash extends JFrame implements ActionListener
         jLOption = new JLabel("Option: ");
         jPRightTop.add(jLOption); 
         jTFOption = new JTextField(""+nOption);
+        jTFOption.setHorizontalAlignment(JTextField.CENTER);
         jPRightTop.add(jTFOption);
         
         // square area label and text field
         jLSquare = new JLabel("Square: ");
         jPRightTop.add(jLSquare);
         jTFSquare = new JTextField(""+nSquare);
+        jTFSquare.setHorizontalAlignment(JTextField.CENTER);
         jPRightTop.add(jTFSquare);
         
         // Direction area label and text field
         jLDirection = new JLabel("Direction: ");
         jPRightTop.add(jLDirection);
         jTFDirection = new JTextField(sDirection);
+        jTFDirection.setHorizontalAlignment(JTextField.CENTER);
         jPRightTop.add(jTFDirection);
         
         //panel right movement underneath right top
@@ -185,24 +224,28 @@ public class CCarCrash extends JFrame implements ActionListener
         jLTimer = new JLabel("DIGITAL TIMER");
         jPRightMiddle.add(jLTimer);
         
-        jTFTimer1 = new JTextField("00");
-        jTFTimer1.setBackground(Color.BLACK);
-        jTFTimer1.setForeground(Color.WHITE);
-        jPRightMiddle.add(jTFTimer1);
+        jTFTimerHours = new JTextField("00");
+        jTFTimerHours.setBackground(Color.BLACK);
+        jTFTimerHours.setForeground(Color.WHITE);
+        jPRightMiddleTimer.add(jTFTimerHours);
         
         timerColons();
         
-        jTFTimer2 = new JTextField("00");
-        jTFTimer2.setBackground(Color.BLACK);
-        jTFTimer2.setForeground(Color.WHITE);
-        jPRightMiddle.add(jTFTimer2);
+        jTFTimerMinutes = new JTextField("00");
+        jTFTimerMinutes.setBackground(Color.BLACK);
+        jTFTimerMinutes.setForeground(Color.WHITE);
+        jPRightMiddleTimer.add(jTFTimerMinutes);
         
         timerColons();
         
-        jTFTimer3 = new JTextField("00");
-        jTFTimer3.setBackground(Color.BLACK);
-        jTFTimer3.setForeground(Color.WHITE);
-        jPRightMiddle.add(jTFTimer3);
+        jTFTimerSeconds = new JTextField("00");
+        jTFTimerSeconds.setBackground(Color.BLACK);
+        jTFTimerSeconds.setForeground(Color.WHITE);
+        jPRightMiddleTimer.add(jTFTimerSeconds);
+        
+        secsTimer = new Timer(1000, this);
+        secsTimer.start();
+        
         
         
         // buttons exit option 1-3 placed within rightbottom
@@ -237,10 +280,11 @@ public class CCarCrash extends JFrame implements ActionListener
         jLSlider = new JLabel("Speed:");
         jPBottomRight.add(jLSlider);
         
-        jSSlider = new JSlider();
+        jSSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 25);
         jSSlider.setMajorTickSpacing(25);
         jSSlider.setPaintTicks(true);
-        jSSlider.setValue(25);
+        jSSlider.addChangeListener(this);
+
         // jSSlider.setBackground(Color.BLUE); you can set the colour of the background too!
         jPBottomRight.add(jSSlider);
         
@@ -253,7 +297,7 @@ public class CCarCrash extends JFrame implements ActionListener
     public void actionPerformed(ActionEvent event)
     { 
     	// nOption = nOption+1;
-    	jTFOption.setText(""+(nOption+1));
+    	/* jTFOption.setText(""+(nOption+1));
     	nOption = nOption+1;
     	nSquare = nSquare+1;
     	jTFSquare.setText(""+nSquare);
@@ -264,8 +308,14 @@ public class CCarCrash extends JFrame implements ActionListener
     	option1();
     	option2();
     	option3();
-    	exit();
+    	exit(); */
+    	secsTimer();
     	
+    	
+    }
+    public void stateChanged(ChangeEvent event)
+    {
+    	sliderTimer();
     }
     // method act section
     public void act()

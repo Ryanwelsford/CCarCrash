@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
  
@@ -72,7 +74,6 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	jBBlank = new JButton();
     	jBBlank.setEnabled(false);
     	jBBlank.setBackground(Color.lightGray);
-    	
     	jPRightMovement.add(jBBlank);
     	
     }
@@ -138,7 +139,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         
         jPRightMiddle = new JPanel();
         jPRightMiddle.setPreferredSize(new Dimension(100, 20));
-        jPRightMiddle.setBackground(Color.green);
+        // jPRightMiddle.setBackground(Color.green);
         jPRight.add(jPRightMiddle);
         
         jPRightMiddleTimer = new JPanel();
@@ -151,19 +152,19 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         // inside right bottom area
         jPRightBottom = new JPanel();
         jPRightBottom.setPreferredSize(new Dimension(180, 75));
-        jPRightBottom.setBackground(Color.gray);
+        // jPRightBottom.setBackground(Color.gray);
         jPRightBottom.setLayout(new GridLayout(2, 2));
         jPRight.add(jPRightBottom);
         
         // bottom
         jPBottomLeft = new JPanel();
         jPBottomLeft.setPreferredSize(new Dimension (500, 40));
-        jPBottomLeft.setBackground(Color.cyan);
+        // jPBottomLeft.setBackground(Color.cyan);
         window.add(jPBottomLeft);
         
         jPBottomRight = new JPanel();
         jPBottomRight.setPreferredSize(new Dimension(280, 40));
-        jPBottomRight.setBackground(Color.BLUE);
+        // jPBottomRight.setBackground(Color.BLUE);
         window.add(jPBottomRight);
         
         
@@ -268,9 +269,21 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         // buttons act run reset
         
         jBAct = new JButton("Act");
+        // there must be a simplier way of adding an image to a button?
+        try {
+            Image img = ImageIO.read(getClass().getResource("resources/step.png"));
+            jBAct.setIcon(new ImageIcon(img));
+          } 
+        catch (Exception ex) {
+            System.out.println(ex);
+          }
+
+
         jPBottomLeft.add(jBAct);
+        // this way is much simplier than try/ catch thing
+        ImageIcon runImg = new ImageIcon(getClass().getResource("resources/run.png"));
         
-        jBRun = new JButton("Run");
+        jBRun = new JButton("Run", runImg);
         jPBottomLeft.add(jBRun);
         
         jBReset = new JButton("Reset");
@@ -284,6 +297,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jSSlider.setMajorTickSpacing(25);
         jSSlider.setPaintTicks(true);
         jSSlider.addChangeListener(this);
+       // jSSlider.setInverted(true); not sure if this works or not?
 
         // jSSlider.setBackground(Color.BLUE); you can set the colour of the background too!
         jPBottomRight.add(jSSlider);

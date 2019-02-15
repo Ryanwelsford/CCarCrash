@@ -1,7 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
  
@@ -10,7 +8,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
 {
 	// panels
 	private JPanel jPCentre, jPBottomRight, jPBottomLeft;
-	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle,jPRightMiddleTimer, jPRightMovement;
+	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle,jPRightMiddleTimer, jPRightMovement, jPRightCompass, jPRightSpacer;
 	
 	// Right top
 	// text fields in top right and variables used within right top
@@ -20,9 +18,10 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     private int nSquare = 17;
     private JTextField jTFDirection;
     private String sDirection = "E";
-    
-    
-    
+    private ImageIcon compassE = new ImageIcon(getClass().getResource("resources/east.jpg"));
+    private ImageIcon compassS = new ImageIcon(getClass().getResource("resources/south.jpg"));
+    private ImageIcon compassW = new ImageIcon(getClass().getResource("resources/west.jpg"));
+    private ImageIcon compassN = new ImageIcon(getClass().getResource("resources/north.jpg"));
     
     
     // labels in right top
@@ -43,6 +42,9 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     // buttons options and exit (right hand side buttons)
     private JButton jBOption1, jBOption2, jBOption3;
     private JButton jBExit;
+    
+    // compass area images and label
+    private JLabel jLCompass;
     
     
     // buttons for directional keys
@@ -152,14 +154,23 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         // jPRightMiddleTimer.setBackground(Color.pink);
         jPRightMiddleTimer.setLayout(new GridLayout(1, 5));
         jPRight.add(jPRightMiddleTimer);
-        
+        // spacer for moving option buttons and compass down 
+        jPRightSpacer = new JPanel();
+        jPRightSpacer.setPreferredSize(new Dimension(100, 80));
+        jPRight.add(jPRightSpacer);
         
         // inside right bottom area
         jPRightBottom = new JPanel();
         jPRightBottom.setPreferredSize(new Dimension(180, 75));
-        // jPRightBottom.setBackground(Color.gray);
+        // jPRightBottom.setBackground(Color.orange);
         jPRightBottom.setLayout(new GridLayout(2, 2));
         jPRight.add(jPRightBottom);
+        
+        // panel for compass
+        jPRightCompass = new JPanel();
+        jPRightCompass.setPreferredSize(new Dimension(180, 150));
+        
+        jPRight.add(jPRightCompass);
         
         // bottom
         jPBottomLeft = new JPanel();
@@ -277,6 +288,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jBExit.addActionListener(this);
         
         //compass area 
+        jLCompass = new JLabel(compassE);
+        jPRightCompass.add(jLCompass);
         
         // buttons act run reset
         ImageIcon actImage = new ImageIcon(getClass().getResource("resources/step.png"));
@@ -327,6 +340,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	
     	else if (source == jBRun)
     	{
+    		
     		run();
     	}
     	
@@ -403,14 +417,26 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	
     	secsTimer = new Timer(1000, this);
         secsTimer.start();
+        jBRun.setEnabled(false);
     }
     
     //method reset
     public void reset()
     {
     	System.out.println("method reset is working");
-    	secsTimer.stop();
+    	// stops null exception from appearing if attempting to reset before time has started
+    	if (secs!=0)
+    	{
+    		secsTimer.stop();
+    	}
+    	
     	secs = 00;
+    	jBRun.setEnabled(true);
+    	nOption = 1;
+    	sDirection = "E";
+    	nSquare = 17;
+    	jSSlider.setValue(1500);
+    	buttonPressed();
     }
     
     //method option1
@@ -418,7 +444,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("method option1 is working");
     	nOption = 1;
-    	jTFOption.setText(""+(nOption));
+    	buttonPressed();
     }
     
     //method option2
@@ -426,7 +452,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("method option2 is working");
     	nOption = 2;
-    	jTFOption.setText(""+(nOption));
+    	buttonPressed();
     }
     
     //method option3
@@ -434,7 +460,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("method option3 is working");
     	nOption = 3;
-    	jTFOption.setText(""+(nOption));
+    	buttonPressed();
     }
     
     //method exit
@@ -449,7 +475,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("up key pressed");
     	sDirection = "N";
-    	jTFDirection.setText(sDirection);
+    	buttonPressed();
     	secs = secs-1;
     }
     
@@ -458,7 +484,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("left key pressed");
     	sDirection = "W";
-    	jTFDirection.setText(sDirection);
+    	buttonPressed();
     }
     
     // method right key pressed
@@ -466,7 +492,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("right key pressed");
     	sDirection = "E";
-    	jTFDirection.setText(sDirection);
+    	buttonPressed();
     }
     
     //method down key pressed
@@ -474,13 +500,38 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("down key pressed");
     	sDirection = "S";
+    	buttonPressed();
+    	
+    }
+    public void buttonPressed() {
+    	jTFOption.setText(""+nOption);
+    	jTFSquare.setText(""+nSquare);
     	jTFDirection.setText(sDirection);
+    	compassDirection();
+    	
+    }
+    // there is something wrong with this method, it always sets the image to west, if you change the ordering of the if statements it allows works for the bottom statement only
+    public void compassDirection() {
+    	if (sDirection.equals("N"))
+    	{
+    		jLCompass.setIcon(compassN);
+    	}
+    	if (sDirection.equals("E"))
+    	{
+    		jLCompass.setIcon(compassE);
+    	}
+    	if (sDirection.equals("S"))
+    	{
+    		jLCompass.setIcon(compassS);
+    	}
+    	if (sDirection.equals("W"))
+    	{
+    		jLCompass.setIcon(compassW);
+    	}
     }
     
     
     
     
-    
-    // need more method for directional buttons
     
 }

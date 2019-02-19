@@ -18,12 +18,21 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     private int nSquare = 17;
     private JTextField jTFDirection;
     private String sDirection = "E";
-    private ImageIcon compassE = new ImageIcon(getClass().getResource("resources/east.jpg"));
-    private ImageIcon compassS = new ImageIcon(getClass().getResource("resources/south.jpg"));
-    private ImageIcon compassW = new ImageIcon(getClass().getResource("resources/west.jpg"));
-    private ImageIcon compassN = new ImageIcon(getClass().getResource("resources/north.jpg"));
     
+    // center panel area
     
+    private JButton jBGridArea;
+    private ImageIcon carImageEast = new ImageIcon(getClass().getResource("resources/car-e.png"));
+    private ImageIcon carImageSouth = new ImageIcon(getClass().getResource("resources/car-s.png"));
+    private ImageIcon carImageWest = new ImageIcon(getClass().getResource("resources/car-w.png"));
+    private ImageIcon carImageNorth = new ImageIcon(getClass().getResource("resources/car-n.png"));
+    private ImageIcon wallHorizontal = new ImageIcon(getClass().getResource("resources/wall-horiz.png"));
+    private ImageIcon wallVertical = new ImageIcon(getClass().getResource("resources/wall-vert.png"));
+    private ImageIcon wallTopLeft = new ImageIcon(getClass().getResource("resources/wall-NW.png"));
+    private ImageIcon wallTopRight = new ImageIcon(getClass().getResource("resources/wall-NE.png"));
+    private ImageIcon wallBottomLeft = new ImageIcon(getClass().getResource("resources/wall-SW.png"));
+    private ImageIcon wallBottomRight = new ImageIcon(getClass().getResource("resources/wall-SE.png"));
+
     // labels in right top
     private JLabel jLOption, jLSquare, jLDirection;
     
@@ -45,7 +54,10 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     
     // compass area images and label
     private JLabel jLCompass;
-    
+    private ImageIcon compassE = new ImageIcon(getClass().getResource("resources/east.jpg"));
+    private ImageIcon compassS = new ImageIcon(getClass().getResource("resources/south.jpg"));
+    private ImageIcon compassW = new ImageIcon(getClass().getResource("resources/west.jpg"));
+    private ImageIcon compassN = new ImageIcon(getClass().getResource("resources/north.jpg"));
     
     // buttons for directional keys
     // buttons labelled as bottom top middle
@@ -92,8 +104,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     }
     private void secsTimer()
     {
-        jTFTimerHours.setText(Integer.toString((secs/3600)%60));
-        // set to 3600 secs in an hour + modulus 60 to prevent higher than 60 appearing in field
+        jTFTimerHours.setText(Integer.toString((secs/3600)%99));
+        // set to 3600 secs in an hour + modulus 99 to prevent higher than 99 appearing in field
         jTFTimerMinutes.setText(Integer.toString((secs/60)%60));
         // 60 seconds in a minute modulus 60 prevents over 60 from being in field
         jTFTimerSeconds.setText(Integer.toString(secs%60));
@@ -119,7 +131,52 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jPCentre = new JPanel();
         jPCentre.setPreferredSize(new Dimension(600, 560));
         jPCentre.setBackground(Color.orange);
+        jPCentre.setLayout(new GridLayout(13,16));
         window.add(jPCentre);
+        
+        for(int area=0; area<208; area++)
+        {
+        jBGridArea = new JButton(""+area);
+        if (area<16 || area>192 )
+        {
+        	// jBGridArea.setForeground(Color.RED);
+        	jBGridArea.setIcon(wallHorizontal);
+        }
+        if (area%16==0 || area%16==15)
+        {
+        	jBGridArea.setIcon(wallVertical);
+
+        }
+        if (area==0)
+        {
+        	jBGridArea.setIcon(wallTopLeft);
+        }
+        if (area==15)
+        {
+        	jBGridArea.setIcon(wallTopRight);
+        }
+        if (area==192)
+        {
+        	jBGridArea.setIcon(wallBottomLeft);
+        }
+        if (area==207)
+        {
+        	jBGridArea.setIcon(wallBottomRight);
+        }
+        
+        if (area==17)
+        {
+        	//         	jBGridArea.setForeground(Color.BLUE);
+        	jBGridArea.setIcon(carImageEast);
+        }
+        // jBGridArea.setEnabled(false);
+        jBGridArea.setMargin(new Insets(0,0,0,0));
+        jBGridArea.setBackground(Color.BLACK);
+        jPCentre.add(jBGridArea);
+        jBGridArea.addActionListener(this);
+        }
+        
+        
         
         // right
         jPRight = new JPanel();
@@ -425,13 +482,11 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     {
     	System.out.println("method reset is working");
     	// stops null exception from appearing if attempting to reset before time has started
-    	if (secs!=0)
-    	{
-    		secsTimer.stop();
-    	}
+    	
     	
     	secs = 00;
     	jBRun.setEnabled(true);
+    	secsTimer.stop();
     	nOption = 1;
     	sDirection = "E";
     	nSquare = 17;
@@ -510,7 +565,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	compassDirection();
     	
     }
-    // there is something wrong with this method, it always sets the image to west, if you change the ordering of the if statements it allows works for the bottom statement only
+// method is used to set compass direction based on what sDirection is currently set to, this changes and is updated on button press
     public void compassDirection() {
     	if (sDirection.equals("N"))
     	{

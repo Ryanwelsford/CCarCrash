@@ -27,18 +27,18 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     
     private JButton jBGridArea[] = new JButton[208];
     private int nCarLocation = 17;
-    private ImageIcon carImageEast = new ImageIcon(getClass().getResource("resources/car-e.png"));
-    private ImageIcon carImageSouth = new ImageIcon(getClass().getResource("resources/car-s.png"));
-    private ImageIcon carImageWest = new ImageIcon(getClass().getResource("resources/car-w.png"));
-    private ImageIcon carImageNorth = new ImageIcon(getClass().getResource("resources/car-n.png"));
-    private ImageIcon wallHorizontal = new ImageIcon(getClass().getResource("resources/wall-horiz.png"));
-    private ImageIcon wallVertical = new ImageIcon(getClass().getResource("resources/wall-vert.png"));
-    private ImageIcon wallTopLeft = new ImageIcon(getClass().getResource("resources/wall-NW.png"));
-    private ImageIcon wallTopRight = new ImageIcon(getClass().getResource("resources/wall-NE.png"));
-    private ImageIcon wallBottomLeft = new ImageIcon(getClass().getResource("resources/wall-SW.png"));
-    private ImageIcon wallBottomRight = new ImageIcon(getClass().getResource("resources/wall-SE.png"));
-    private ImageIcon space = new ImageIcon(getClass().getResource("resources/space.png"));
-
+    private Icon iconCarEast;
+    private Icon iconCarSouth;
+    private Icon iconCarWest;
+    private Icon iconCarNorth;
+    private Icon iconWallHorizontal;
+    private Icon iconWallVertical;
+    private Icon iconWallTopLeft;
+    private Icon iconWallTopRight;
+    private Icon iconWallBottomLeft;
+    private Icon iconWallBottomRight; 
+    private Icon iconSpace;
+    
     // labels in right top
     private JLabel jLOption, jLSquare, jLDirection;
     
@@ -60,11 +60,11 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     
     // compass area images and label
     private JLabel jLCompass;
-    private ImageIcon compassE = new ImageIcon(getClass().getResource("resources/east.jpg"));
-    private ImageIcon compassS = new ImageIcon(getClass().getResource("resources/south.jpg"));
-    private ImageIcon compassW = new ImageIcon(getClass().getResource("resources/west.jpg"));
-    private ImageIcon compassN = new ImageIcon(getClass().getResource("resources/north.jpg"));
-    private Icon iconAct;
+    private Icon compassE;
+    private Icon compassS;
+    private Icon compassW;
+    private Icon compassN;
+    
     
     // buttons for directional keys
     // buttons labelled as bottom top middle
@@ -77,7 +77,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     
     // buttons for bottom area
     private JButton jBAct, jBRun, jBReset;
-    
+    private Icon iconAct, iconRun, iconReset;
     // slider with slider label
     private JSlider jSSlider;
     private JLabel jLSlider;
@@ -143,51 +143,67 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         // jPCentre.setBackground(Color.orange);
         jPCentre.setLayout(new GridLayout(13,16));
         window.add(jPCentre);
+        try {
+        	iconSpace = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/space.png")));
+        	iconCarSouth = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/car-s.png")));
+        	iconCarNorth = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/car-n.png")));
+        	iconCarWest = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/car-w.png")));
+        	iconCarEast = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/car-e.png")));
+        	iconWallHorizontal = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-horiz.png")));
+        	iconWallVertical = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-vert.png")));
+        	iconWallTopRight = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-NE.png")));
+        	iconWallTopLeft = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-NW.png")));
+        	iconWallBottomRight = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-SE.png")));
+        	iconWallBottomLeft = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-SW.png")));
+        }
+        catch(Exception c) {
+        	System.err.println("car, wall, space images not found");
+        }
         
         for(int area=0; area<208; area++)
         {
         jBGridArea[area] = new JButton(""+area);
         // sets all buttons to space by default
-        //jBGridArea[area].setIcon(space);
+        jBGridArea[area].setIcon(iconSpace);
         // sets all outer horizontal walls
         if (area<16 || area>192 )
         {
         	// jBGridArea.setForeground(Color.RED);
-        	//jBGridArea[area].setIcon(wallHorizontal);
+        	jBGridArea[area].setIcon(iconWallHorizontal);
         }
         // sets all outer vertical walls
         if (area%16==0 || area%16==15)
         {
-        	//jBGridArea[area].setIcon(wallVertical);
+        	jBGridArea[area].setIcon(iconWallVertical);
 
         }
-        // sets corner areas of outter red ring box
+        // sets corner areas of outer red ring box
         if (area==0)
         {
-        	//jBGridArea[area].setIcon(wallTopLeft);
+        	jBGridArea[area].setIcon(iconWallTopLeft);
         }
         if (area==15)
         {
-        	//jBGridArea[area].setIcon(wallTopRight);
+        	jBGridArea[area].setIcon(iconWallTopRight);
         }
         if (area==192)
         {
-        	//jBGridArea[area].setIcon(wallBottomLeft);
+        	jBGridArea[area].setIcon(iconWallBottomLeft);
         }
         if (area==207)
         {
-        	//jBGridArea[area].setIcon(wallBottomRight);
+        	jBGridArea[area].setIcon(iconWallBottomRight);
         }
         
         if (area==17)
         {
-        	jBGridArea[area].setForeground(Color.BLUE);
+        	jBGridArea[area].setIcon(iconCarEast);
         	//jBGridArea[area].setIcon(carImageEast);
         }
         // jBGridArea.setEnabled(false);
         jBGridArea[area].setMargin(new Insets(0,0,0,0));
-        jBGridArea[area].setBackground(Color.BLACK);
-        //jBGridArea[area].setBorderPainted(false);
+        //jBGridArea[area].setBackground(Color.BLACK);
+        jBGridArea[area].setBorderPainted(false);
         jBGridArea[area].addActionListener(this);
         jPCentre.add(jBGridArea[area]);
         
@@ -362,36 +378,48 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jBExit.addActionListener(this);
         
         //compass area 
-        jLCompass = new JLabel(compassE);
+        try {
+        	compassE = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/east.jpg")));
+        	compassW = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/west.jpg")));
+        	compassN = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/north.jpg")));
+        	compassS = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/south.jpg")));
+        }
+        catch (Exception d) {
+        	System.err.println("compass images not found");
+        }
+        jLCompass = new JLabel();
+        jLCompass.setIcon(compassE);
         jPRightCompass.add(jLCompass);
-        
         // buttons act run reset
         
         try	
         {
-        	//ImageIcon iconAct = new ImageIcon("Act.jpg");
+        	//icons act run reset
         	iconAct = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/step.png")));
+        	iconRun = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/run.png")));
+        	iconReset = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/reset.png")));
+
+
         	
         }
         catch (Exception e)
         {
-            System.err.println("Baby Icon ImageIcon "+e);
+            System.err.println("bottom bar Images not found "+e);
         } 
         
-        ImageIcon actImage = new ImageIcon(getClass().getResource("resources/step.png"));
         jBAct = new JButton("Act");
         jBAct.setIcon(iconAct);
         jBAct.addActionListener(this);
         jPBottomLeft.add(jBAct);
         
-        // this way is much simplier than try/ catch thing
-        ImageIcon runImage = new ImageIcon(getClass().getResource("resources/run.png"));
-        jBRun = new JButton("Run", runImage);
+        // images should be inserted with try/catch method rather than declaring an iconimage
+        jBRun = new JButton("Run");
+        jBRun.setIcon(iconRun);
         jBRun.addActionListener(this);
         jPBottomLeft.add(jBRun);
         
-        ImageIcon resetImage = new ImageIcon(getClass().getResource("resources/reset.png"));
-        jBReset = new JButton("Reset", resetImage);
+        jBReset = new JButton("Reset");
+        jBReset.setIcon(iconReset);
         jBReset.addActionListener(this);
         jPBottomLeft.add(jBReset);
         
@@ -475,12 +503,6 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	{
     		downButton();
     	}
-    	// nOption = nOption+1;
-    	/* jTFOption.setText(""+(nOption+1));
-    	nOption = nOption+1;
-    	nSquare = nSquare+1;
-    	jTFSquare.setText(""+nSquare);
-    	jTFDirection.setText("S"); */
     	
     	
     	secsTimer();
@@ -519,7 +541,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	
     	secs = 00;
     	jBRun.setEnabled(true);
-    	
+    	nCarLocation = 17;
+    	jBGridArea[17].setIcon(iconCarEast);
     	nOption = 1;
     	sDirection = "E";
     	nSquare = 17;
@@ -564,8 +587,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	System.out.println("up key pressed");
     	sDirection = "N";
     	nSquare = nSquare-16;
-    	jBGridArea[nCarLocation].setForeground(Color.WHITE);
-    	jBGridArea[nCarLocation-16].setForeground(Color.RED);
+    	jBGridArea[nCarLocation].setIcon(iconSpace);
+    	jBGridArea[nCarLocation-16].setIcon(iconCarNorth);
     	nCarLocation = nCarLocation-16;
     	buttonPressed();
     	secs = secs-1;
@@ -577,8 +600,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	System.out.println("left key pressed");
     	sDirection = "W";
     	nSquare = nSquare-1;
-    	jBGridArea[nCarLocation].setForeground(Color.WHITE);
-    	jBGridArea[nCarLocation-1].setForeground(Color.RED);
+    	jBGridArea[nCarLocation].setIcon(iconSpace);
+    	jBGridArea[nCarLocation-1].setIcon(iconCarWest);
     	nCarLocation--;
     	buttonPressed();
     }
@@ -589,11 +612,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	System.out.println("right key pressed");
     	sDirection = "E";
     	nSquare = nSquare+1;
-    	jBGridArea[nCarLocation].setForeground(Color.WHITE);
-    	jBGridArea[nCarLocation].setIcon(null);
-    	jBGridArea[nCarLocation].setBackground(Color.BLACK);
-    	jBGridArea[nCarLocation+1].setIcon(iconAct);
-    	//jBGridArea[nCarLocation+1].setForeground(Color.RED);
+    	jBGridArea[nCarLocation].setIcon(iconSpace);
+    	jBGridArea[nCarLocation+1].setIcon(iconCarEast);
     	nCarLocation++;
     	buttonPressed();
     }
@@ -604,8 +624,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	System.out.println("down key pressed");
     	sDirection = "S";
     	nSquare = nSquare+16;
-    	jBGridArea[nCarLocation].setForeground(Color.WHITE);
-    	jBGridArea[nCarLocation+16].setForeground(Color.RED);
+    	jBGridArea[nCarLocation].setIcon(iconSpace);
+    	jBGridArea[nCarLocation+16].setIcon(iconCarSouth);
     	nCarLocation = nCarLocation+16;
     	buttonPressed();
     	
@@ -624,15 +644,15 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	{
     		jLCompass.setIcon(compassN);
     	}
-    	if (sDirection.equals("E"))
+    	else if (sDirection.equals("E"))
     	{
     		jLCompass.setIcon(compassE);
     	}
-    	if (sDirection.equals("S"))
+    	else if (sDirection.equals("S"))
     	{
     		jLCompass.setIcon(compassS);
     	}
-    	if (sDirection.equals("W"))
+    	else if (sDirection.equals("W"))
     	{
     		jLCompass.setIcon(compassW);
     	}

@@ -12,51 +12,38 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
 	// menu bar
 	private JMenuBar JMBMenu;
 	private JMenu JMScenario, JMEdit, JMControls, JMHelp;
-	private JMenuItem JMIExit, JMITopic, JMIAbout;
+	private JMenuItem JMIExit, JMITopic, JMIAbout, JMIHelp;
 	// panels
 	private JPanel jPCentre, jPBottomRight, jPBottomLeft;
 	private JPanel jPRight, jPRightTop, jPRightBottom, jPRightMiddle,jPRightMiddleTimer, jPRightMovement, jPRightCompass, jPRightSpacer;
 	
 	// Right top
 	// text fields in top right and variables used within right top
-    private JTextField jTFOption;
+    private JTextField jTFOption, jTFSquare, jTFDirection;
     private int nOption = 1;
-    private JTextField jTFSquare;
-    private JTextField jTFDirection;
     private String sDirection = "E";
     
     // center panel area
-    
+    // array creation for use in GUI to set up 13*16 grid buttons and add action listeners to them
     private JButton jBGridArea[] = new JButton[208];
     private int nCarLocation = 17;
-    private Icon iconCarEast;
-    private Icon iconCarSouth;
-    private Icon iconCarWest;
-    private Icon iconCarNorth;
-    private Icon iconWallHorizontal;
-    private Icon iconWallVertical;
-    private Icon iconWallTopLeft;
-    private Icon iconWallTopRight;
-    private Icon iconWallBottomLeft;
-    private Icon iconWallBottomRight; 
-    private Icon iconSpace;
-    private Icon iconObstacle;
+    // icons for grid area, walls, space and cars
+    private Icon iconCarEast, iconCarSouth, iconCarWest, iconCarNorth, iconWallHorizontal, iconWallVertical, iconWallTopLeft;
+    private Icon iconWallTopRight, iconWallBottomLeft, iconWallBottomRight, iconSpace, iconObstacle, iconFinish;
     
     // labels in right top
     private JLabel jLOption, jLSquare, jLDirection;
     
     // right middle
     // labels in right middle
-    private JLabel jLTimer;
-    private JLabel jLTimerColons;
+    private JLabel jLTimer, jLTimerColons;
     
     // text fields in right middle
     private JTextField jTFTimerHours, jTFTimerMinutes, jTFTimerSeconds;
     
     // timer for hours, mins, secs.
-    private javax.swing.Timer secsTimer;
-    private javax.swing.Timer runTimer;
-    
+    private javax.swing.Timer secsTimer, runTimer;
+    // timer initial setting and creation of timercontroller which is used to prevent issues with timers attempting to be stopped or started multiple times without the opposite occuring
     int secs = 0;
     boolean timerController = false;
     
@@ -65,11 +52,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     private JButton jBExit;
     
     // compass area images and label
-    private JButton jLCompass;
-    private Icon compassE;
-    private Icon compassS;
-    private Icon compassW;
-    private Icon compassN;
+    private JButton jBCompass;
+    private Icon compassE, compassS, compassW, compassN;
     
     
     // buttons for directional keys
@@ -89,13 +73,13 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     private JLabel jLSlider;
     
     Random random = new Random();
-    
+    // ints for move method, initial spawn point for finish line and sets up spawn array for option 3 
     public int move_Left = -1;
     public int move_Right = 1;
     public int move_Up = -16;
     public int move_Down =16;
-    
-    
+    public int finishPosition = 177;
+    public int spawnPoints[] = new int[80];
  
     public static void main (String[] args)
     {
@@ -107,7 +91,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         frame.setResizable(false);
         frame.setTitle("CarCrash - Car Race Application");
     }
-    
+    // used within GUI to create empty buttons for use within arrow directional area
     private void blankButtons()
     {
     	jBBlank = new JButton();
@@ -116,12 +100,14 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	jPRightMovement.add(jBBlank);
     	
     }
+    // used within GUI method for timer spaces between timer text fields
     private void timerColons()
     {
     	jLTimerColons = new JLabel(":");
     	jLTimerColons.setHorizontalAlignment(JLabel.CENTER);
     	jPRightMiddleTimer.add(jLTimerColons);
     }
+    // ticks timer forward and pastes secs into timer fields
     private void secsTimer()
     {
     	// changed the way of setting set text in fields to include a formatter makes timers always have two digits
@@ -134,13 +120,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jTFTimerSeconds.setText(times.format(secs%60));
         
     }
-    private void sliderTimer()
-    {
-    	int speedValue = jSSlider.getValue();
-    	System.out.println(speedValue);
-    	runTimer.setDelay(speedValue);
-    	// may need to change to its own timer at some point? slider timer does exist but breaks other timer atm
-    }
+    // menu bar method sets up menubar with menus and menu items within them
  private void menuBarCreation() {
 	 JMBMenu = new JMenuBar();
      setJMenuBar(JMBMenu);
@@ -151,28 +131,70 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
      JMEdit = new JMenu("Edit");
      JMControls = new JMenu("Controls");
      JMHelp = new JMenu("Help");
+     JMIHelp = new JMenuItem("Help");
+     JMIHelp.addActionListener(this);
+     JMHelp.add(JMIHelp);
      JMIAbout = new JMenuItem("About");
      JMIAbout.addActionListener(this);
      JMHelp.add(JMIAbout);
      JMITopic = new JMenuItem("Topic");
      JMITopic.addActionListener(this);
      JMHelp.add(JMITopic);
-     
-     
+     // adds menus to menu bar
      JMBMenu.add(JMScenario);
      JMBMenu.add(JMEdit);
      JMBMenu.add(JMControls);
      JMBMenu.add(JMHelp);
      
  }
+ // sets up spawn array for option 3, loops through values, additional ints are used as counters when adding 16 for columns. 
+ private void initialiseArray() {
+	 int y = 0;
+	 int w =0;
+	 for (int x= 0; x<=11; x++) {
+		 spawnPoints[x] = x+18;
+	 }
+	 for (int x=12; x<=25; x++) {
+		 spawnPoints[x]  = x+21;
+	 }
+	 for (int x = 26; x<=39; x++) {
+		 spawnPoints[x] = x+135;
+	 }
+	 for (int x = 40; x<=51; x++ ) {
+		 spawnPoints[x] = x+138;
+	 }
+	 for (int x = 52; x<=65; x = x+2) {
+		 int z = 49+(16*y);
+		 spawnPoints[x] = z;
+		 spawnPoints[x+1] = z+1;
+		 y++;
+	 }
+	 for (int x= 66; x<=79; x = x+2) {
+		 int z = 61+(16*w);
+		 spawnPoints[x] = z;
+		 spawnPoints[x+1] = z+1;
+		 w++;
+	 }
+	 // for debugging and testing of array
+	 for (int x=0; x<spawnPoints.length; x++) {
+		 System.out.println(spawnPoints[x]);
+	 }
+ }
+ 	// entire creation of user interface
     private void createGUI()
     {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         Container window = getContentPane();
         window.setLayout(new FlowLayout() ); // sets items to centre into the window
+        // frame icon setting setting
+        Image imageGreenfoot = Toolkit.getDefaultToolkit().getImage(getClass().getResource("resources/greenfoot.png"));
+        setIconImage(imageGreenfoot); 
         
         // menubar area
         menuBarCreation();
+        
+        // array for spawns set up
+        initialiseArray();
         
         // panels section
         
@@ -195,6 +217,8 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         	iconWallBottomRight = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-SE.png")));
         	iconWallBottomLeft = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/wall-SW.png")));
         	iconObstacle = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/person.png")));
+        	iconFinish = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/sandstone.jpg")));
+       
         }
         catch(Exception c) {
         	System.err.println("car, wall, space images not found");
@@ -208,7 +232,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         // sets all outer horizontal walls
         if ((area<16 || area>192) || (area>51 && area<60) || (area>147 && area<157) )
         {
-        	// jBGridArea.setForeground(Color.RED);
+        // jBGridArea.setForeground(Color.RED);
         	jBGridArea[area].setIcon(iconWallHorizontal);
         }
         // sets all outer vertical walls
@@ -236,7 +260,9 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         if (area==17)
         {
         	jBGridArea[area].setIcon(iconCarEast);
-        	//jBGridArea[area].setIcon(carImageEast);
+        }
+        if (area==finishPosition) {
+        	jBGridArea[area].setIcon(iconFinish);
         }
         // jBGridArea.setEnabled(false);
         jBGridArea[area].setMargin(new Insets(0,0,0,0));
@@ -390,12 +416,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jTFTimerSeconds.setForeground(Color.WHITE);
         jPRightMiddleTimer.add(jTFTimerSeconds);
         
-        
-        
-        
-        
-        
-        
+
         // buttons exit option 1-3 placed within rightbottom
         jBOption1 = new JButton("Option 1");
         jPRightBottom.add(jBOption1);
@@ -423,16 +444,14 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         catch (Exception d) {
         	System.err.println("compass images not found");
         }
-        jLCompass = new JButton();
+        jBCompass = new JButton();
         //jLCompass.setEnabled(false);
-        jLCompass.setBorder(null);
+        jBCompass.setBorder(null);
         //jLCompass.setBorderPainted(false);
-        jLCompass.setMargin(new Insets(0,0,0,0));
-        jLCompass.setLayout(new GridLayout(1,1));
-       // jLCompass.setPreferredSize(new Dimension(150, 150));
-        jLCompass.setIcon(compassE);
+        jBCompass.setMargin(new Insets(0,0,0,0));
+        jBCompass.setIcon(compassE);
         
-        jPRightCompass.add(jLCompass);
+        jPRightCompass.add(jBCompass);
         // buttons act run reset
         
         try	
@@ -442,8 +461,6 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         	iconRun = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/run.png")));
         	iconReset = new ImageIcon(Toolkit.getDefaultToolkit().createImage(CCarCrash.class.getResource("resources/reset.png")));
 
-
-        	
         }
         catch (Exception e)
         {
@@ -455,7 +472,6 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
         jBAct.addActionListener(this);
         jPBottomLeft.add(jBAct);
         
-        // images should be inserted with try/catch method rather than declaring an iconimage
         jBRun = new JButton("Run");
         jBRun.setIcon(iconRun);
         jBRun.addActionListener(this);
@@ -548,27 +564,33 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     		exit();
     	}
     	else if (source == JMIAbout) {
-    		JOptionPane.showMessageDialog(null, "Hello");
+    		JOptionPane.showMessageDialog(null, "CCarCrash is a game developed by Ryan Welsford as part of a programming assignment at the Northampton university");
     	}
     	else if (source == JMITopic) {
-    		JOptionPane.showMessageDialog(null, "Hello");
+    		JOptionPane.showMessageDialog(null, "For further information regarding CCarCrash visit the technical report");
     	}
-    	// need to add sources for menu items 
-    	
-    	
+    	else if (source == JMIHelp) {
+    		JOptionPane.showMessageDialog(null, "Click \"Run\" to see car manuever around the screen, click option commands to see different layouts of obstacles");
+    	}
     }
     public void stateChanged(ChangeEvent event)
     {
-    	sliderTimer();
+    	delayTimer();
     
     }
+    private void delayTimer()
+    {
+    	// gets value from slider and applies a delay to the runTimer, which then speeds/slow car movement
+    	int speedValue = jSSlider.getValue();
+    	System.out.println(speedValue);
+    	runTimer.setDelay(speedValue);
+    }
+    
     // method act section
     public void act()
     {
     	System.out.println("method act is working");
     	driveCar();
-    	
-    	
     }
     
     //method run section
@@ -578,31 +600,27 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	if (timerController==false) {
 	    	secsTimer = new Timer(1000, this);
 	        secsTimer.start();
-	        jBRun.setEnabled(false);
 	        timerController = true;
 	        runTimer = new Timer(1000, this);
 	        runTimer.start();
     	}
-    	
+    	else if (timerController) {
+    		secsTimer.stop();
+    		runTimer.stop();
+    		timerController = false;
+    	}
     }
     
     //method reset
     public void reset()
     {
     	System.out.println("method reset is working");
-    	jBRun.setEnabled(true);
-    	jBGridArea[nCarLocation].setIcon(iconSpace);
-    	nCarLocation = 17;
-    	jBGridArea[17].setIcon(iconCarEast);
     	nOption = 1;
     	sDirection = "E";
     	jSSlider.setValue(1500);
-    	jBGridArea[179].setIcon(iconSpace);
-    	jBGridArea[114].setIcon(iconSpace);
-    	jBGridArea[36].setIcon(iconSpace);
-    	jBGridArea[171].setIcon(iconSpace);
-    	
-    	
+    	resetArray();
+    	resetCarAndFinish(17, 177);
+
     	if (timerController==true) 
     	{
     		secsTimer.stop();
@@ -618,19 +636,21 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	buttonPressed();
     }
     
-    //method option1
+    public void resetArray() 
+    {
+    	for (int x=0; x<spawnPoints.length; x++) 
+    	{
+    	jBGridArea[spawnPoints[x]].setIcon(iconSpace);
+    	}
+    }
+    //method option1 resets other options then sets car to default option
     public void option1()
     {
     	System.out.println("method option1 is working");
     	nOption = 1;
     	sDirection = "E";
-    	jBGridArea[nCarLocation].setIcon(iconSpace);
-    	nCarLocation = 17;
-    	jBGridArea[nCarLocation].setIcon(iconCarEast);
-    	jBGridArea[171].setIcon(iconSpace);
-    	jBGridArea[179].setIcon(iconSpace);
-    	jBGridArea[114].setIcon(iconSpace);
-    	jBGridArea[36].setIcon(iconSpace);
+    	resetArray();
+    	resetCarAndFinish(17, 177);
     	buttonPressed();
     }
     
@@ -640,25 +660,48 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	System.out.println("method option2 is working");
     	nOption = 2;
     	sDirection = "W";
-    	jBGridArea[nCarLocation].setIcon(iconSpace);
-    	nCarLocation = 190;
-    	jBGridArea[190].setIcon(iconCarWest);
+    	resetArray();
     	jBGridArea[179].setIcon(iconObstacle);
     	jBGridArea[171].setIcon(iconObstacle);
     	jBGridArea[114].setIcon(iconObstacle);
     	jBGridArea[36].setIcon(iconObstacle);
+    	resetCarAndFinish(190, 30);
     	buttonPressed();
     }
     
     //method option3
     public void option3()
     {
+    	resetArray();
+    	for (int x =0; x<4; x++) {
+        	int Randx = random.nextInt(spawnPoints.length);
+    		jBGridArea[spawnPoints[Randx]].setIcon(iconObstacle);
+    	}
+    	
     	System.out.println("method option3 is working");
     	nOption = 3;
-    	//jBGridArea[(random.nextInt(29)+17)].setIcon(iconObstacle);
+    	sDirection = "S";
+    	resetCarAndFinish(30, 17);
     	buttonPressed();
     }
-    
+    public void resetCarAndFinish(int c, int f) {
+    	jBGridArea[nCarLocation].setIcon(iconSpace);
+    	jBGridArea[finishPosition].setIcon(iconSpace);
+    	nCarLocation = c;
+    	finishPosition = f;
+    	jBGridArea[finishPosition].setIcon(iconFinish);
+    	
+    	if (nCarLocation == 17) {
+        	jBGridArea[nCarLocation].setIcon(iconCarEast); 
+    	}
+    	else if (nCarLocation == 190) {
+    	jBGridArea[nCarLocation].setIcon(iconCarWest); 
+    		
+    	}
+    	else if (nCarLocation == 30) {
+        	jBGridArea[nCarLocation].setIcon(iconCarSouth); 
+    	}
+    }
     //method exit
     public void exit()
     {
@@ -666,19 +709,40 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     	System.exit(0);
     }
     
-    // method up key pressed
-
     public void driveCar() {
     	
     	Icon right = jBGridArea[nCarLocation+1].getIcon();
     	Icon left = jBGridArea[nCarLocation-1].getIcon();
     	Icon down = jBGridArea[nCarLocation+16].getIcon();
     	Icon up = jBGridArea[nCarLocation-16].getIcon();
-    	Icon downLeft = jBGridArea[nCarLocation+15].getIcon();
-
+    	Icon finish = jBGridArea[finishPosition].getIcon();
     	// if surrounded on three sides move into open side
     	// could use random rolls for movements when 3 options / 2 options / the rare 4 options
-    	if (nOption==2 || nOption==1) { 
+    	if (right==finish) {
+    		move(move_Right);
+    		runTimer.stop();
+    		secsTimer.stop();
+    		timerController = false;
+    	}
+    	else if (left==finish) {
+    		move(move_Left);
+    		runTimer.stop();
+    		secsTimer.stop();
+    		timerController = false;
+    	}
+    	else if (up==finish) {
+    		move(move_Up);
+    		runTimer.stop();
+    		secsTimer.stop();
+    		timerController = false;
+    	}
+    	else if (down==finish) {
+    		move(move_Down);
+    		runTimer.stop();
+    		secsTimer.stop();
+    		timerController = false;
+    	}
+    	else {
 	    	if (right==iconSpace && left!=iconSpace && up!=iconSpace && down!=iconSpace) {
 	    		move(move_Right);
 	    		System.out.println("1");
@@ -696,18 +760,18 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
 	    		System.out.println("4");
 	    	}
 	    	else if (right!=iconSpace && left!=iconSpace && up!=iconSpace && down!=iconSpace) {
-	    		System.out.println("Trapped!");
-	    		System.out.println("5");
+	    		JOptionPane.showMessageDialog(null, "Car is trapped!, reset required!");
+	    		reset();
 	    	}
 	    	else if (right!=iconSpace && left!=iconSpace) {
 	    		int decide = random.nextInt(2);
 	    		if (decide==0) {
 	    			move(move_Up);
-	    			System.out.println("6");
+	    			System.out.println("5");
 	    		}
 	    		else {
 	    			move(move_Down);
-	    			System.out.println("7");
+	    			System.out.println("6");
 	    		}
 	    	}
 	    	else if (up!=iconSpace && down!=iconSpace) {
@@ -715,62 +779,56 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
 	    		System.out.println(decide);
 	    		if (decide==0) {
 	    			move(move_Right);
-	    			System.out.println("8");
+	    			System.out.println("7");
 	    		}
 	    		else {
 	    			move(move_Left);
-	    			System.out.println("9");
+	    			System.out.println("8");
 	    		}
 	    	}
-	    	else if (right!=iconSpace && down!=iconSpace) {
+	    	else if (right!=iconSpace && down!=iconSpace && nCarLocation%16==15) {
 	    		move(move_Left);
-	    		System.out.println("10");
+	    		System.out.println("9");
 	    	}
 	    	else if (right!=iconSpace && up!=iconSpace) {
 	    		move(move_Down);
-	    		System.out.println("11");
+	    		System.out.println("10");
 	    	}
 	    	
 	    	else if (up!=iconSpace && left!=iconSpace) {
-	    		move(move_Right);
-	    		System.out.println("12");
+	    		int decide = random.nextInt(2);
+	    		if (decide==0) {
+	    			move(move_Right);
+	    			System.out.println("11");
+	    		}
+	    		else {
+	    			move(move_Down);
+	    			System.out.println("12");
+	    		}
 	    	}
 	    	else if (up!=iconSpace && right!=iconSpace) {
 	    		move(move_Down);
+	    		System.out.println("13");
 	    	}
 	    	else if (left!=iconSpace && down!=iconSpace) {
 	    		move(move_Up);
-	    		System.out.println("13");
-	    	}
-	    	else if (left!=iconSpace) {
-	    		move(move_Up);
 	    		System.out.println("14");
+	    	}
+	    	else if (left!=iconSpace  && (nCarLocation%16 ==1 || nCarLocation%16 ==2)) {
+	    		move(move_Up);
 	    	}
 	    	else if (left==iconSpace && right==iconSpace && up!=iconSpace && nCarLocation>100) {
 	    		move(move_Left);
-	    		System.out.println("15");
 	    	}
-	    	/*else if (up!=iconSpace && downLeft!=iconSpace ) {
-	    		int decide = random.nextInt(2);
-	    		if (decide==0) {
-	    			move(move_Left);
-	    		}
-	    		else if (decide==1) {
-	    			move(move_Right);
-	    		}
-	    		
-	    	}*/
 	    	else if (up!=iconSpace) {
 	    		move(move_Right);
-	    		System.out.println("16");
 	    	} 
 	    	else if (down!=iconSpace) {
 	    		move(move_Left);
-	    		System.out.println("17");
 	    	}
-	    	else if (right!=iconSpace) {
+	    	else if (right!=iconSpace && (nCarLocation%16 ==14 || nCarLocation%16 ==15)) {
 	    		move(move_Down);
-	    		System.out.println("18");
+	    		System.out.println("here");
 	    	}
 	    	else if (right==iconSpace && left==iconSpace && down==iconSpace && up==iconSpace) {
 	    		int decide = random.nextInt(4);
@@ -789,16 +847,18 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
 	    	}
 	    	else {
 	    		move(move_Right);
-	    		System.out.println("19");
 	    	}
     	}
+    	
     	buttonPressed();
     
     }
     public void move(int nDirection) {
+    	
     	Icon check = jBGridArea[nCarLocation+nDirection].getIcon();
-    	if (check==iconSpace) {
+    	if (check==iconSpace || check==iconFinish) {
     		jBGridArea[nCarLocation].setIcon(iconSpace);
+    		
     		if (nDirection==16) {
     			jBGridArea[nCarLocation+nDirection].setIcon(iconCarSouth);
     			sDirection = "S";
@@ -815,6 +875,7 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     			jBGridArea[nCarLocation+nDirection].setIcon(iconCarNorth);
     			sDirection = "N";
 	    	}
+    	
     		nCarLocation = nCarLocation+nDirection;
     }
     }
@@ -897,24 +958,21 @@ public class CCarCrash extends JFrame implements ActionListener, ChangeListener
     public void compassDirection() {
     	if (sDirection.equals("N"))
     	{
-    		jLCompass.setIcon(compassN);
+    		jBCompass.setIcon(compassN);
     	}
     	else if (sDirection.equals("E"))
     	{
-    		jLCompass.setIcon(compassE);
+    		jBCompass.setIcon(compassE);
     	}
     	else if (sDirection.equals("S"))
     	{
-    		jLCompass.setIcon(compassS);
+    		jBCompass.setIcon(compassS);
     	}
     	else if (sDirection.equals("W"))
     	{
-    		jLCompass.setIcon(compassW);
+    		jBCompass.setIcon(compassW);
     	}
     }
     
-    
-    
-    
-    
+
 }
